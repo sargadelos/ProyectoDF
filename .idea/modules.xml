@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/comun.iml" filepath="$PROJECT_DIR$/.idea/modules/comun.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/comun-build.iml" filepath="$PROJECT_DIR$/.idea/modules/comun-build.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/nodoDF.iml" filepath="$PROJECT_DIR$/.idea/modules/nodoDF.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/nodoDF-build.iml" filepath="$PROJECT_DIR$/.idea/modules/nodoDF-build.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/raiz.iml" filepath="$PROJECT_DIR$/.idea/modules/raiz.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/raiz-build.iml" filepath="$PROJECT_DIR$/.idea/modules/raiz-build.iml" />
+    </modules>
+  </component>
+</project>
