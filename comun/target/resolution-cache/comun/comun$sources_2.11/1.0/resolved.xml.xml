@@ -4,7 +4,7 @@
 		module="comun$sources_2.11"
 		revision="1.0"
 		status="integration"
-		publication="20170615205328"
+		publication="20170620210328"
 	/>
 	<configurations>
 		<conf name="compile" visibility="public" description=""/>
@@ -24,9 +24,6 @@
 	<publications>
 	</publications>
 	<dependencies>
-		<dependency org="com.typesafe.akka" name="akka-actor_2.11" rev="2.4.17" transitive="false" conf="compile->default(compile);runtime->default(compile);test->default(compile);compile-internal->default(compile);runtime-internal->default(compile);test-internal->default(compile)" info.apiURL="http://doc.akka.io/api/akka/2.4.17">
-			<artifact name="akka-actor_2.11" type="src" ext="jar" conf="sources" e:classifier="sources"/>
-		</dependency>
 		<dependency org="org.scala-lang" name="scala-library" rev="2.11.8" transitive="false" conf="compile->default(compile);runtime->default(compile);test->default(compile);provided->default(compile);compile-internal->default(compile);runtime-internal->default(compile);test-internal->default(compile);scala-tool->default(compile)" info.apiURL="http://www.scala-lang.org/api/2.11.8/">
 			<artifact name="scala-library" type="src" ext="jar" conf="sources" e:classifier="sources"/>
 		</dependency>
@@ -38,6 +35,9 @@
 		</dependency>
 		<dependency org="com.typesafe.akka" name="akka-remote_2.11" rev="2.4.17" transitive="false" conf="compile->default(compile);runtime->default(compile);test->default(compile);compile-internal->default(compile);runtime-internal->default(compile);test-internal->default(compile)" info.apiURL="http://doc.akka.io/api/akka/2.4.17">
 			<artifact name="akka-remote_2.11" type="src" ext="jar" conf="sources" e:classifier="sources"/>
+		</dependency>
+		<dependency org="com.typesafe.akka" name="akka-actor_2.11" rev="2.4.17" transitive="false" conf="compile->default(compile);runtime->default(compile);test->default(compile);compile-internal->default(compile);runtime-internal->default(compile);test-internal->default(compile)" info.apiURL="http://doc.akka.io/api/akka/2.4.17">
+			<artifact name="akka-actor_2.11" type="src" ext="jar" conf="sources" e:classifier="sources"/>
 		</dependency>
 		<dependency org="com.typesafe.akka" name="akka-stream_2.11" rev="2.4.17" transitive="false" conf="compile->default(compile);runtime->default(compile);test->default(compile);compile-internal->default(compile);runtime-internal->default(compile);test-internal->default(compile)" info.apiURL="http://doc.akka.io/api/akka/2.4.17">
 			<artifact name="akka-stream_2.11" type="src" ext="jar" conf="sources" e:classifier="sources"/>
@@ -75,10 +75,10 @@
 		<dependency org="com.typesafe.akka" name="akka-cluster-tools_2.11" rev="2.4.17" transitive="false" conf="compile->default(compile);runtime->default(compile);test->default(compile);compile-internal->default(compile);runtime-internal->default(compile);test-internal->default(compile)" info.apiURL="http://doc.akka.io/api/akka/2.4.17">
 			<artifact name="akka-cluster-tools_2.11" type="src" ext="jar" conf="sources" e:classifier="sources"/>
 		</dependency>
-		<dependency org="com.typesafe.akka" name="akka-contrib_2.11" rev="2.4.17" transitive="false" conf="compile->default(compile);runtime->default(compile);test->default(compile);compile-internal->default(compile);runtime-internal->default(compile);test-internal->default(compile)" info.apiURL="http://doc.akka.io/api/akka/2.4.17">
+		<dependency org="com.typesafe.akka" name="akka-contrib_2.11" rev="2.4.8" transitive="false" conf="compile->default(compile);runtime->default(compile);test->default(compile);compile-internal->default(compile);runtime-internal->default(compile);test-internal->default(compile)">
 			<artifact name="akka-contrib_2.11" type="src" ext="jar" conf="sources" e:classifier="sources"/>
 		</dependency>
-		<dependency org="com.typesafe.akka" name="akka-persistence_2.11" rev="2.4.17" transitive="false" conf="compile->default(compile);runtime->default(compile);test->default(compile);compile-internal->default(compile);runtime-internal->default(compile);test-internal->default(compile)" info.apiURL="http://doc.akka.io/api/akka/2.4.17">
+		<dependency org="com.typesafe.akka" name="akka-persistence_2.11" rev="2.4.8" transitive="false" conf="compile->default(compile);runtime->default(compile);test->default(compile);compile-internal->default(compile);runtime-internal->default(compile);test-internal->default(compile)">
 			<artifact name="akka-persistence_2.11" type="src" ext="jar" conf="sources" e:classifier="sources"/>
 		</dependency>
 		<dependency org="org.apache.spark" name="spark-sql_2.11" rev="2.0.0" transitive="false" conf="compile->default(compile);runtime->default(compile);test->default(compile);compile-internal->default(compile);runtime-internal->default(compile);test-internal->default(compile)">

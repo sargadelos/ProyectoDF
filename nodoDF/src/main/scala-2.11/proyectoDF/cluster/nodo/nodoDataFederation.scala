@@ -25,7 +25,8 @@ class nodoDataFederation extends Actor {
   var contador = 0
 
   // create Spark context with Spark configuration
-  val sc = new SparkContext(new SparkConf().setAppName("Spark Count"))
+  val conf = new SparkConf().setAppName("SparkNodoConexion").setMaster("local")
+  val sc = new SparkContext(conf)
 
   def receive = {
     case job: peticionDF =>
