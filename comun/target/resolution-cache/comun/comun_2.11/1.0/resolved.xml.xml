@@ -4,7 +4,7 @@
 		module="comun_2.11"
 		revision="1.0"
 		status="integration"
-		publication="20170620210147"
+		publication="20170624201527"
 	>
 		<description>
 		comun
@@ -39,8 +39,7 @@
 		<dependency org="com.typesafe.akka" name="akka-cluster_2.11" rev="2.4.17" conf="compile->default(compile)"/>
 		<dependency org="com.typesafe.akka" name="akka-cluster-tools_2.11" rev="2.4.17" conf="compile->default(compile)"/>
 		<dependency org="com.typesafe.akka" name="akka-contrib_2.11" rev="2.4.8" conf="compile->default(compile)"/>
-		<dependency org="org.apache.spark" name="spark-core_2.11" rev="2.0.0" conf="provided->default(compile)"/>
-		<dependency org="org.apache.spark" name="spark-sql_2.11" rev="2.0.0" conf="compile->default(compile)"/>
-		<dependency org="com.datastax.spark" name="spark-cassandra-connector_2.11" rev="1.6.0" conf="compile->default(compile)"/>
+		<dependency org="org.apache.spark" name="spark-core_2.11" rev="2.1.0" conf="compile->default(compile)"/>
+		<dependency org="org.apache.spark" name="spark-sql_2.11" rev="2.1.0" conf="compile->default(compile)"/>
 	</dependencies>
 </ivy-module>

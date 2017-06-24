@@ -1,5 +1,5 @@
-sbt.ResolveException: unresolved dependency: com.datastax.spark#spark-cassandra-connector_2.11;1.0.0-rc5: not found
-unresolved dependency: com.datastax.spark#spark-cassandra-connector-java_2.11;1.0.0-rc5: not found
+sbt.ResolveException: unresolved dependency: org.apache.spark#spark-core_2.11;2.1.0: not found
+unresolved dependency: org.apache.spark#spark-sql_2.11;2.1.0: not found
 	at sbt.IvyActions$.sbt$IvyActions$$resolve(IvyActions.scala:291)
 	at sbt.IvyActions$$anonfun$updateEither$1.apply(IvyActions.scala:188)
 	at sbt.IvyActions$$anonfun$updateEither$1.apply(IvyActions.scala:165)
@@ -49,6 +49,6 @@ unresolved dependency: com.datastax.spark#spark-cassandra-connector-java_2.11;1.
 	at java.util.concurrent.FutureTask.run(FutureTask.java:266)
 	at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1142)
 	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:617)
-	at java.lang.Thread.run(Thread.java:745)
-[error] (comun/*:ssExtractDependencies) sbt.ResolveException: unresolved dependency: com.datastax.spark#spark-cassandra-connector_2.11;1.0.0-rc5: not found
-[error] unresolved dependency: com.datastax.spark#spark-cassandra-connector-java_2.11;1.0.0-rc5: not found
+	at java.lang.Thread.run(Thread.java:748)
+[error] (comun/*:ssExtractDependencies) sbt.ResolveException: unresolved dependency: org.apache.spark#spark-core_2.11;2.1.0: not found
+[error] unresolved dependency: org.apache.spark#spark-sql_2.11;2.1.0: not found

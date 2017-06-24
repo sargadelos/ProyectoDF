@@ -7,7 +7,7 @@ lazy val allResolvers = Seq(
   "Akka Snapshot Repository" at "http://repo.akka.io/snapshots/"
 )
 
-val sparkVersion = "2.0.0"
+val sparkVersion = "2.1.0"
 val sparkCassandraVersion = "1.6.0"
 
 lazy val AllLibraryDependencies =
@@ -17,9 +17,9 @@ lazy val AllLibraryDependencies =
     "com.typesafe.akka" %% "akka-cluster" % "2.4.17",
     "com.typesafe.akka" %% "akka-cluster-tools" % "2.4.17",
     "com.typesafe.akka" %% "akka-contrib" % "2.4.8",
-    "org.apache.spark" %% "spark-core" % sparkVersion % "provided",
-    "org.apache.spark" %% "spark-sql" % sparkVersion,
-    "com.datastax.spark" % "spark-cassandra-connector_2.11" % sparkCassandraVersion
+    "org.apache.spark" %% "spark-core" % sparkVersion,
+    "org.apache.spark" %% "spark-sql" % sparkVersion//,
+//    "com.datastax.spark" % "spark-cassandra-connector_2.11" % sparkCassandraVersion
   )
 
 

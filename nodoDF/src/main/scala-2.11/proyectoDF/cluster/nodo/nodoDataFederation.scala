@@ -18,21 +18,22 @@ import jdk.nashorn.internal.runtime.regexp.joni.Config
 import proyectoDF.cluster.mensajeria.{peticionDF, respuestaDF}
 
 import org.apache.spark.SparkContext
-import org.apache.spark.SparkContext._
 import org.apache.spark.SparkConf
+
+
 class nodoDataFederation extends Actor {
 
   var contador = 0
-
-  // create Spark context with Spark configuration
-  val conf = new SparkConf().setAppName("SparkNodoConexion").setMaster("spark://utad-virtual-machine:7077")
+  val conf = new SparkConf().setAppName("SparkNodoConexion").setMaster("spark://utad-virtual-machine:7077")//.set("spark.ui.port", "44040" )
   val sc = new SparkContext(conf)
 
+  // create Spark context with Spark configuration
   def receive = {
     case job: peticionDF =>
       println(s"Recibida peticion en DataFederation (): '$job'")
       contador += 1
       implicit val timeout = Timeout(5 seconds)
+
 
       // Load our input data.
       println("Leer Fichero")
@@ -45,7 +46,7 @@ class nodoDataFederation extends Actor {
       val counts = words.map(word => (word, 1)).reduceByKey{case (x, y) => x + y}
       // Save the word count back out to a text file, causing evaluation.
       println("Escribir Fichero")
-      counts.saveAsTextFile("/home/utad/Descargas/Proyecto/"+contador+".txt")
+      //counts.saveAsTextFile("/home/utad/Descargas/Proyecto/"+contador)
       sender() ! respuestaDF(s"Respuesta del DataFederation a: '$job'")
 
   }

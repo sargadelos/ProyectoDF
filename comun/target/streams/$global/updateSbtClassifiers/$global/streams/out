@@ -174,7 +174,6 @@
 [debug] == resolving dependencies org.scala-sbt#incremental-compiler;0.13.8->org.scala-sbt#logging;0.13.8 [compile->default(compile)]
 [info] Resolving org.scala-sbt#logging;0.13.8 ...
 [debug] sbt-chain: Checking cache for: dependency: org.scala-sbt#logging;0.13.8 {compile=[default(compile)]}
-[debug] no default cache defined: set to /home/utad/.ivy2/cache
 [debug] sbt-chain: module revision found in cache: org.scala-sbt#logging;0.13.8
 [debug] 	found org.scala-sbt#logging;0.13.8 in sbt-chain
 [debug] == resolving dependencies org.scala-sbt#logging;0.13.8->org.scala-lang#scala-library;2.10.4 [compile->default(compile)]
@@ -704,9 +703,9 @@
 [debug] 	[NOT REQUIRED] org.scala-sbt#test-agent;0.13.8!test-agent.jar
 [debug] 	[NOT REQUIRED] org.scala-sbt#test-interface;1.0!test-interface.jar
 [debug] 	[NOT REQUIRED] org.scala-sbt#apply-macro;0.13.8!apply-macro.jar
-[debug] :: resolution report :: resolve 1124ms :: artifacts dl 23ms
+[debug] :: resolution report :: resolve 2995ms :: artifacts dl 106ms
 [debug] 	report for comun#comun$sbt_2.11;1.0 default produced in /home/utad/Dropbox/Proyecto/DF/ProyectoDF/comun/target/resolution-cache/reports/comun-comun$sbt_2.11-default.xml
-[debug] 	resolve done (1124ms resolve - 23ms download)
+[debug] 	resolve done (2995ms resolve - 106ms download)
 [debug] Using inline dependencies specified in Scala.
 [debug] :: resolving dependencies :: comun#comun$sources_2.11;1.0
 [debug] 	confs: [default]
@@ -1070,6 +1069,6 @@
 [debug] 	[NOT REQUIRED] org.scala-sbt#precompiled-2_8_2;0.13.8!precompiled-2_8_2.jar(src)
 [debug] 	[NOT REQUIRED] org.scala-sbt#precompiled-2_9_2;0.13.8!precompiled-2_9_2.jar(src)
 [debug] 	[NOT REQUIRED] org.scala-sbt#precompiled-2_9_3;0.13.8!precompiled-2_9_3.jar(src)
-[debug] :: resolution report :: resolve 210ms :: artifacts dl 43ms
+[debug] :: resolution report :: resolve 278ms :: artifacts dl 99ms
 [debug] 	report for comun#comun$sources_2.11;1.0 default produced in /home/utad/Dropbox/Proyecto/DF/ProyectoDF/comun/target/resolution-cache/reports/comun-comun$sources_2.11-default.xml
-[debug] 	resolve done (210ms resolve - 43ms download)
+[debug] 	resolve done (278ms resolve - 99ms download)
