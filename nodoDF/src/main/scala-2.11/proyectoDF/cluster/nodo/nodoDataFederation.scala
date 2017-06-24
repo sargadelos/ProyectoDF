@@ -25,7 +25,7 @@ class nodoDataFederation extends Actor {
   var contador = 0
 
   // create Spark context with Spark configuration
-  val conf = new SparkConf().setAppName("SparkNodoConexion").setMaster("local")
+  val conf = new SparkConf().setAppName("SparkNodoConexion").setMaster("spark://utad-virtual-machine:7077")
   val sc = new SparkContext(conf)
 
   def receive = {
@@ -33,6 +33,19 @@ class nodoDataFederation extends Actor {
       println(s"Recibida peticion en DataFederation (): '$job'")
       contador += 1
       implicit val timeout = Timeout(5 seconds)
+
+      // Load our input data.
+      println("Leer Fichero")
+      val input =  sc.textFile("/home/utad/Descargas/test.csv")
+      // Split up into words.
+      println("FlatMap")
+      val words = input.flatMap(line => line.split(" "))
+      // Transform into word and count.
+      println("Map")
+      val counts = words.map(word => (word, 1)).reduceByKey{case (x, y) => x + y}
+      // Save the word count back out to a text file, causing evaluation.
+      println("Escribir Fichero")
+      counts.saveAsTextFile("/home/utad/Descargas/Proyecto/"+contador+".txt")
       sender() ! respuestaDF(s"Respuesta del DataFederation a: '$job'")
 
   }

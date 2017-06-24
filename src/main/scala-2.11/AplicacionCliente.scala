@@ -18,7 +18,7 @@ object AplicacionCliente {
     import system.dispatcher
     system.scheduler.schedule(2.seconds, 2.seconds) {
       actorClienteDataFederation ! EnviarPeticion (counter.incrementAndGet().toString)
-      Thread.sleep(1000)
+      Thread.sleep(4000)
     }
 
     StdIn.readLine()
