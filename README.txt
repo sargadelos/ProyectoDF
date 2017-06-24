@@ -6,3 +6,4 @@
 
 Debe estar arrancado Spark (de momento solo funciona en local)
 
+Ya funciona sobre cluster spark en la misma maquina
