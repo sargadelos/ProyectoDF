@@ -16,12 +16,18 @@ object AplicacionCliente {
 
     val counter = new AtomicInteger
     import system.dispatcher
-    system.scheduler.schedule(2.seconds, 2.seconds) {
-      actorClienteDataFederation ! EnviarPeticion (counter.incrementAndGet().toString)
-      Thread.sleep(4000)
+
+    var mensaje = new String
+
+    mensaje = scala.io.StdIn.readLine("Mensaje? ")
+
+    while (mensaje != "FIN") {
+
+      actorClienteDataFederation ! EnviarPeticion (mensaje)
+      Thread.sleep(3000)
+      mensaje = scala.io.StdIn.readLine("Mensaje? ")
     }
 
-    StdIn.readLine()
     system.terminate()
   }
 }

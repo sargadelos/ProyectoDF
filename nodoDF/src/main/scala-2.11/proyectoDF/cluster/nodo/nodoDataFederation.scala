@@ -16,38 +16,50 @@ import akka.pattern.pipe
 import akka.pattern.ask
 import jdk.nashorn.internal.runtime.regexp.joni.Config
 import proyectoDF.cluster.mensajeria.{peticionDF, respuestaDF}
-
 import org.apache.spark.SparkContext
 import org.apache.spark.SparkConf
+import org.apache.spark.sql.SQLContext
 
+import scala.collection.mutable.HashMap
 
 class nodoDataFederation extends Actor {
 
   var contador = 0
-  val conf = new SparkConf().setAppName("SparkNodoConexion").setMaster("spark://utad-virtual-machine:7077")//.set("spark.ui.port", "44040" )
-  val sc = new SparkContext(conf)
+
+//  val conf = new SparkConf().setAppName("SparkNodoConexion").setMaster("spark://utad-virtual-machine:7077")//.set("spark.ui.port", "44040" )
+//  val sc = new SparkContext(conf)
+
+
+  val spark = org.apache.spark.sql.SparkSession.builder
+    .master("spark://df-machine-01:7077")
+    .appName("SparkNodoConexion")
+      .config("spark.cores.max", 1)
+    .getOrCreate;
+
+  val df = spark.read
+    .format("com.databricks.spark.csv")
+    .option("header", "true") //reading the headers
+    .option("mode", "DROPMALFORMED")
+    .load("/home/utad/Descargas/airports.csv"); //.csv("csv/file/path") //spark 2.0 api
+
+  // after registering as a table you will be able to run sql queries
+  df.registerTempTable("airports")
+
+
 
   // create Spark context with Spark configuration
   def receive = {
     case job: peticionDF =>
-      println(s"Recibida peticion en DataFederation (): '$job'")
+      println(s"Recibida peticion en DataFederation (): '${job.texto}'")
       contador += 1
-      implicit val timeout = Timeout(5 seconds)
-
 
       // Load our input data.
-      println("Leer Fichero")
-      val input =  sc.textFile("/home/utad/Descargas/test.csv")
-      // Split up into words.
-      println("FlatMap")
-      val words = input.flatMap(line => line.split(" "))
-      // Transform into word and count.
-      println("Map")
-      val counts = words.map(word => (word, 1)).reduceByKey{case (x, y) => x + y}
-      // Save the word count back out to a text file, causing evaluation.
-      println("Escribir Fichero")
-      //counts.saveAsTextFile("/home/utad/Descargas/Proyecto/"+contador)
-      sender() ! respuestaDF(s"Respuesta del DataFederation a: '$job'")
+      val resultado = spark.sql(s"select airport from airports where iata like '${job.texto}'")
+
+      resultado.collect().foreach(t => sender() ! respuestaDF("Respuesta: "+t(0)))
+//      implicit val timeout = Timeout(1 seconds)
+
+      sender() ! respuestaDF(s"Fin de la Respuesta del DataFederation a: '${job.texto}'")
 
   }
 }

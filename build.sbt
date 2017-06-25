@@ -12,6 +12,9 @@ val sparkCassandraVersion = "1.6.0"
 
 lazy val AllLibraryDependencies =
   Seq(
+//    "commons-net" % "commons-net" % "2.2",
+    "org.scala-lang" % "scala-compiler" % "2.11.8",
+    "org.scala-lang.modules" % "scala-xml_2.11" % "1.0.4",
     "com.typesafe.akka" %% "akka-actor" % "2.4.8",
     "com.typesafe.akka" %% "akka-remote" % "2.4.17",
     "com.typesafe.akka" %% "akka-cluster" % "2.4.17",

@@ -12,19 +12,16 @@ import scala.util.{Failure, Success}
 class ActorClienteDataFederation extends Actor {
 
   val initialContacts = Set(
-    ActorPath.fromString("akka.tcp://ClusterDataFederation@127.0.0.1:2551/system/receptionist"))
+    ActorPath.fromString("akka.tcp://ClusterDataFederation@192.168.1.20:2551/system/receptionist"))
   val settings = ClusterClientSettings(context.system)
     .withInitialContacts(initialContacts)
 
   val c = context.system.actorOf(ClusterClient.props(settings), "ClienteDataFederation")
 
   def receive = {
-    case respuestaDF(result) =>
-      println("Respuesta del Cliente")
-      println(result)
 
     case EnviarPeticion(peticion) =>
-      val job = peticionDF("Peticion - " + peticion)
+      val job = peticionDF(peticion)
       implicit val timeout = Timeout(duration = 5 seconds)
       val result = Patterns.ask(c, ClusterClient.Send("/user/nodo", job, localAffinity = true), timeout)
 
