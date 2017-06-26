@@ -4,14 +4,11 @@ package proyectoDF.cluster.nodo
 
 
 import language.postfixOps
-import akka.actor.{Actor}
+import akka.actor.{Actor, ActorPath, ActorRef, ActorSystem, Terminated}
 import akka.cluster.pubsub.DistributedPubSub
-import akka.cluster.pubsub.DistributedPubSubMediator.{SendToAll}
+import akka.cluster.pubsub.DistributedPubSubMediator.{Publish, SendToAll, Send, Subscribe}
 
 import proyectoDF.cluster.mensajeria.{metaDataDF, peticionDF, respuestaDF}
-
-
-import scala.collection.mutable.HashMap
 
 class nodoDataFederation extends Actor {
 
@@ -24,7 +21,7 @@ class nodoDataFederation extends Actor {
     .master("spark://df-machine-01:7077")
     .appName("SparkNodoConexion")
       .config("spark.cores.max", 1)
-    .getOrCreate;
+    .getOrCreate
 
   val df = spark.read
     .format("com.databricks.spark.csv")
