@@ -28,14 +28,6 @@ class nodoDataFederation extends Actor {
   var contador = 0
 
   // Variables para replicacion metada
-//  val initialContacts = Set(
-//    ActorPath.fromString("akka.tcp://ClusterDataFederation@192.168.1.20:2551/system/receptionist"))
-//  val settings = ClusterClientSettings(context.system)
-//    .withInitialContacts(initialContacts)
-//  val c = context.system.actorOf(ClusterClient.props(settings), "ClienteMetaData")
-
-
-  // activate the extension
   val mediator = DistributedPubSub(context.system).mediator
 
   val spark = org.apache.spark.sql.SparkSession.builder
