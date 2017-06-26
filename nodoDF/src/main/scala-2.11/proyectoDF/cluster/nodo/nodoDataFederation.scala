@@ -46,7 +46,6 @@ class nodoDataFederation extends Actor {
   df.createOrReplaceTempView("airports")
 
 
-
   // create Spark context with Spark configuration
   def receive = {
     case job: peticionDF =>
