@@ -15,6 +15,7 @@ class ActorClienteDataFederation extends Actor {
   val settings = ClusterClientSettings(context.system)
     .withInitialContacts(initialContacts)
 
+
   val c = context.system.actorOf(ClusterClient.props(settings), "ClienteDataFederation")
 
   def receive = {
