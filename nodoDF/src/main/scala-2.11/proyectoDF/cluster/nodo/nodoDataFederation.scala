@@ -4,22 +4,12 @@ package proyectoDF.cluster.nodo
 
 
 import language.postfixOps
-import scala.concurrent.Future
-import akka.actor.{Actor, ActorPath, ActorRef, ActorSystem, Terminated}
-import akka.util.Timeout
+import akka.actor.{Actor}
 import akka.cluster.pubsub.DistributedPubSub
-import akka.cluster.pubsub.DistributedPubSubMediator.{Publish, SendToAll, Send, Subscribe}
+import akka.cluster.pubsub.DistributedPubSubMediator.{SendToAll}
 
-import scala.concurrent.duration._
-import scala.concurrent.ExecutionContext.Implicits.global
-import akka.pattern.pipe
-import akka.pattern.ask
-import jdk.nashorn.internal.runtime.regexp.joni.Config
 import proyectoDF.cluster.mensajeria.{metaDataDF, peticionDF, respuestaDF}
-import org.apache.spark.SparkContext
-import org.apache.spark.SparkConf
-import org.apache.spark.sql.SQLContext
-import akka.cluster.client.{ClusterClient, ClusterClientSettings}
+
 
 import scala.collection.mutable.HashMap
 
