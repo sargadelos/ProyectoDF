@@ -4,6 +4,8 @@
     <profile name="SBT 1" modules="clustering,project,root,backend,common,frontend">
       <option name="postfixOps" value="true" />
     </profile>
-    <profile name="SBT 2" modules="raiz,comun,nodoDF" />
+    <profile name="SBT 2" modules="raiz,comun,nodoDF">
+      <option name="postfixOps" value="true" />
+    </profile>
   </component>
 </project>

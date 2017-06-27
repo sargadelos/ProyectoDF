@@ -22,7 +22,7 @@ class ActorClienteDataFederation extends Actor {
 
     case EnviarPeticion(peticion) =>
       val job = peticionDF(peticion)
-      implicit val timeout = Timeout(duration = 5 seconds)
+      implicit val timeout = Timeout(duration = 15 seconds)
       val result = Patterns.ask(c, ClusterClient.Send("/user/nodo", job, localAffinity = true), timeout)
 
       result.onComplete {
