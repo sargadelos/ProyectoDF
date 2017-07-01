@@ -15,7 +15,6 @@ object AplicacionCliente {
         name = "actorClienteDataFederation")
 
     val counter = new AtomicInteger
-    import system.dispatcher
 
     var mensaje = new String
 
@@ -24,7 +23,6 @@ object AplicacionCliente {
     while (mensaje != "FIN") {
 
       actorClienteDataFederation ! EnviarPeticion (mensaje)
-      Thread.sleep(3000)
       mensaje = scala.io.StdIn.readLine("Mensaje? ")
     }
 

@@ -21,16 +21,20 @@ class ActorClienteDataFederation extends Actor {
   def receive = {
 
     case EnviarPeticion(peticion) =>
-      val job = peticionDF(peticion)
-      implicit val timeout = Timeout(duration = 15 seconds)
+      var resultado = ""
+      var mensaje = ""
+      val job = peticionDF(peticion, resultado, mensaje)
+      implicit val timeout = Timeout(duration = 150 seconds)
       val result = Patterns.ask(c, ClusterClient.Send("/user/nodo", job, localAffinity = true), timeout)
 
       result.onComplete {
         case Success(transformationResult) =>
-          println(s"Cliente - Resultado: $transformationResult")
+          println(s"OK: Resultado: ")
+          val res : Array[String] = null
+          println(transformationResult)
+          sender() ! transformationResult
           self ! transformationResult
-
-        case Failure(t) => println("Error: " + t.getMessage)
+        case Failure(t) => println("KO: " + t.getMessage)
       }
   }
 }

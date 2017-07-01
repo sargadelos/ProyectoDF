@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ScalaCompilerConfiguration">
+    <parameters>
+      <parameter value="-Ylog-classpath" />
+    </parameters>
     <profile name="SBT 1" modules="clustering,project,root,backend,common,frontend">
       <option name="postfixOps" value="true" />
     </profile>
-    <profile name="SBT 2" modules="raiz,comun,nodoDF">
-      <option name="postfixOps" value="true" />
-    </profile>
+    <profile name="SBT 3" modules="raiz,comun,nodoDF" />
   </component>
 </project>
