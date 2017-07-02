@@ -4,7 +4,7 @@
 		module="comun$sbt_2.11"
 		revision="1.0"
 		status="integration"
-		publication="20170630215706"
+		publication="20170702221520"
 	/>
 	<configurations>
 		<conf name="default" visibility="public"/>
@@ -13,5 +13,77 @@
 	</publications>
 	<dependencies>
 		<dependency org="org.scala-sbt" name="sbt" rev="0.13.8" conf="default->default(compile)"/>
+		<dependency org="com.eed3si9n" name="sbt-assembly" rev="0.14.5" conf="default->default(compile)" scalaVersion="2.10" sbtVersion="0.13"/>
+		<dependency org="org.scalactic" name="scalactic_2.10" rev="3.0.1" conf="default->default(compile)"/>
+		<dependency org="org.scala-lang" name="scala-library" rev="2.10.4" conf="default->default(compile)" info.apiURL="http://www.scala-lang.org/api/2.10.4/"/>
+		<dependency org="org.scala-lang" name="scala-reflect" rev="2.10.4" conf="default->default(compile)" info.apiURL="http://www.scala-lang.org/api/2.10.4/"/>
+		<dependency org="org.pantsbuild" name="jarjar" rev="1.6.4" conf="default->default(compile)"/>
+		<dependency org="org.apache.ant" name="ant" rev="1.9.9" conf="default->default(compile)"/>
+		<dependency org="org.apache.ant" name="ant-launcher" rev="1.9.9" conf="default->default(compile)"/>
+		<dependency org="org.ow2.asm" name="asm" rev="5.2" conf="default->default(compile)"/>
+		<dependency org="org.ow2.asm" name="asm-commons" rev="5.2" conf="default->default(compile)"/>
+		<dependency org="org.ow2.asm" name="asm-tree" rev="5.2" conf="default->default(compile)"/>
+		<dependency org="org.apache.maven" name="maven-plugin-api" rev="3.3.9" conf="default->default(compile)"/>
+		<dependency org="org.apache.maven" name="maven-model" rev="3.3.9" conf="default->default(compile)"/>
+		<dependency org="org.codehaus.plexus" name="plexus-utils" rev="3.0.22" conf="default->default(compile)"/>
+		<dependency org="org.apache.commons" name="commons-lang3" rev="3.4" conf="default->default(compile)"/>
+		<dependency org="org.apache.maven" name="maven-artifact" rev="3.3.9" conf="default->default(compile)"/>
+		<dependency org="org.eclipse.sisu" name="org.eclipse.sisu.plexus" rev="0.3.2" conf="default->default(compile)"/>
+		<dependency org="javax.enterprise" name="cdi-api" rev="1.0" conf="default->default(compile)"/>
+		<dependency org="javax.annotation" name="jsr250-api" rev="1.0" conf="default->default(compile)"/>
+		<dependency org="javax.inject" name="javax.inject" rev="1" conf="default->default(compile)"/>
+		<dependency org="org.eclipse.sisu" name="org.eclipse.sisu.inject" rev="0.3.2" conf="default->default(compile)"/>
+		<dependency org="org.codehaus.plexus" name="plexus-component-annotations" rev="1.6" conf="default->default(compile)"/>
+		<dependency org="org.codehaus.plexus" name="plexus-classworlds" rev="2.5.2" conf="default->default(compile)"/>
+		<dependency org="org.scala-sbt" name="main" rev="0.13.8" conf="default->default(compile)"/>
+		<dependency org="org.scala-sbt" name="actions" rev="0.13.8" conf="default->default(compile)"/>
+		<dependency org="org.scala-sbt" name="classpath" rev="0.13.8" conf="default->default(compile)"/>
+		<dependency org="org.scala-lang" name="scala-compiler" rev="2.10.4" conf="default->default(compile)"/>
+		<dependency org="org.scala-sbt" name="launcher-interface" rev="0.13.8" conf="default->default(compile)"/>
+		<dependency org="org.scala-sbt" name="interface" rev="0.13.8" conf="default->default(compile)" component="xsbti"/>
+		<dependency org="org.scala-sbt" name="io" rev="0.13.8" conf="default->default(compile)"/>
+		<dependency org="org.scala-sbt" name="control" rev="0.13.8" conf="default->default(compile)"/>
+		<dependency org="org.scala-sbt" name="completion" rev="0.13.8" conf="default->default(compile)"/>
+		<dependency org="org.scala-sbt" name="collections" rev="0.13.8" conf="default->default(compile)"/>
+		<dependency org="jline" name="jline" rev="2.11" conf="default->default(compile)"/>
+		<dependency org="org.scala-sbt" name="api" rev="0.13.8" conf="default->default(compile)"/>
+		<dependency org="org.scala-sbt" name="compiler-integration" rev="0.13.8" conf="default->default(compile)"/>
+		<dependency org="org.scala-sbt" name="incremental-compiler" rev="0.13.8" conf="default->default(compile)"/>
+		<dependency org="org.scala-sbt" name="logging" rev="0.13.8" conf="default->default(compile)"/>
+		<dependency org="org.scala-sbt" name="process" rev="0.13.8" conf="default->default(compile)"/>
+		<dependency org="org.scala-sbt" name="relation" rev="0.13.8" conf="default->default(compile)"/>
+		<dependency org="org.scala-sbt" name="compile" rev="0.13.8" conf="default->default(compile)"/>
+		<dependency org="org.scala-sbt" name="classfile" rev="0.13.8" conf="default->default(compile)"/>
+		<dependency org="org.scala-sbt" name="persist" rev="0.13.8" conf="default->default(compile)"/>
+		<dependency org="org.scala-tools.sbinary" name="sbinary_2.10" rev="0.4.2" conf="default->default(compile)"/>
+		<dependency org="org.scala-sbt" name="compiler-ivy-integration" rev="0.13.8" conf="default->default(compile)"/>
+		<dependency org="org.scala-sbt" name="ivy" rev="0.13.8" conf="default->default(compile)"/>
+		<dependency org="org.scala-sbt" name="cross" rev="0.13.8" conf="default->default(compile)"/>
+		<dependency org="org.scala-sbt.ivy" name="ivy" rev="2.3.0-sbt-fccfbd44c9f64523b61398a0155784dcbaeae28f" conf="default->default(compile)"/>
+		<dependency org="com.jcraft" name="jsch" rev="0.1.46" conf="default->default(compile)"/>
+		<dependency org="org.scala-sbt" name="serialization_2.10" rev="0.1.1" conf="default->default(compile)"/>
+		<dependency org="org.scala-lang.modules" name="scala-pickling_2.10" rev="0.10.0" conf="default->default(compile)"/>
+		<dependency org="org.scalamacros" name="quasiquotes_2.10" rev="2.0.1" conf="default->default(compile)"/>
+		<dependency org="org.json4s" name="json4s-core_2.10" rev="3.2.10" conf="default->default(compile)"/>
+		<dependency org="org.json4s" name="json4s-ast_2.10" rev="3.2.10" conf="default->default(compile)"/>
+		<dependency org="com.thoughtworks.paranamer" name="paranamer" rev="2.6" conf="default->default(compile)"/>
+		<dependency org="org.spire-math" name="jawn-parser_2.10" rev="0.6.0" conf="default->default(compile)"/>
+		<dependency org="org.spire-math" name="json4s-support_2.10" rev="0.6.0" conf="default->default(compile)"/>
+		<dependency org="org.scala-sbt" name="run" rev="0.13.8" conf="default->default(compile)"/>
+		<dependency org="org.scala-sbt" name="task-system" rev="0.13.8" conf="default->default(compile)"/>
+		<dependency org="org.scala-sbt" name="tasks" rev="0.13.8" conf="default->default(compile)"/>
+		<dependency org="org.scala-sbt" name="tracking" rev="0.13.8" conf="default->default(compile)"/>
+		<dependency org="org.scala-sbt" name="cache" rev="0.13.8" conf="default->default(compile)"/>
+		<dependency org="org.scala-sbt" name="testing" rev="0.13.8" conf="default->default(compile)"/>
+		<dependency org="org.scala-sbt" name="test-agent" rev="0.13.8" conf="default->default(compile)"/>
+		<dependency org="org.scala-sbt" name="test-interface" rev="1.0" conf="default->default(compile)"/>
+		<dependency org="org.scala-sbt" name="main-settings" rev="0.13.8" conf="default->default(compile)"/>
+		<dependency org="org.scala-sbt" name="apply-macro" rev="0.13.8" conf="default->default(compile)"/>
+		<dependency org="org.scala-sbt" name="command" rev="0.13.8" conf="default->default(compile)"/>
+		<dependency org="org.scala-sbt" name="logic" rev="0.13.8" conf="default->default(compile)"/>
+		<dependency org="org.scala-sbt" name="compiler-interface" rev="0.13.8" conf="default->default(compile)"/>
+		<dependency org="org.scala-sbt" name="precompiled-2_8_2" rev="0.13.8" conf="default->default(compile)"/>
+		<dependency org="org.scala-sbt" name="precompiled-2_9_2" rev="0.13.8" conf="default->default(compile)"/>
+		<dependency org="org.scala-sbt" name="precompiled-2_9_3" rev="0.13.8" conf="default->default(compile)"/>
 	</dependencies>
 </ivy-module>

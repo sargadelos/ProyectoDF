@@ -7,9 +7,9 @@ import com.typesafe.config.ConfigFactory
 import akka.cluster.client.ClusterClientReceptionist
 
 
-object nodoDataFederationApp {
+object nodoDataFederationApp extends App {
 
-  def main(args: Array[String]): Unit = {
+  override def main(args: Array[String]): Unit = {
 
     // Override the configuration of the port when specified as program argument
     val port = if (args.isEmpty) "0" else args(0)

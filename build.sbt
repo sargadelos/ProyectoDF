@@ -1,6 +1,6 @@
+
 import sbt._
 import sbt.Keys._
-
 
 lazy val allResolvers = Seq(
   "Typesafe Repository" at "http://repo.typesafe.com/typesafe/releases/",
@@ -21,10 +21,52 @@ lazy val AllLibraryDependencies =
     "com.typesafe.akka" %% "akka-cluster" % "2.4.17",
     "com.typesafe.akka" %% "akka-cluster-tools" % "2.4.17",
     "com.typesafe.akka" %% "akka-contrib" % "2.4.8",
-    "org.apache.spark" %% "spark-core" % sparkVersion,
-    "org.apache.spark" %% "spark-sql" % sparkVersion
-//    "com.datastax.spark" % "spark-cassandra-connector_2.11" % sparkCassandraVersion  )
+    ("org.apache.spark" %% "spark-core" % sparkVersion)
+      .exclude("commons-beanutils", "commons-beanutils")
+      .exclude("commons-beanutils", "commons-beanutils-core")
+      .exclude("javax.inject", "javax.inject")
+      .exclude("aopalliance", "aopalliance")
+      .exclude("org.apache.hadoop", "hadoop-yarn-common")
+      .exclude("org.apache.hadoop", "hadoop-yarn-api")
+      .exclude("org.spark-project.spark", "unused"),
+   ("org.apache.spark" %% "spark-sql" % sparkVersion)
+      .exclude("commons-beanutils", "commons-beanutils")
+      .exclude("commons-beanutils", "commons-beanutils-core")
+      .exclude("org.apache.hadoop", "hadoop-yarn-common")
+      .exclude("javax.inject", "javax.inject")
+      .exclude("aopalliance", "aopalliance")
+      .exclude("org.apache.hadoop", "hadoop-yarn-api")
+      .exclude("org.spark-project.spark", "unused")
+    //    "com.datastax.spark" % "spark-cassandra-connector_2.11" % sparkCassandraVersion  )
   )
+
+assemblyMergeStrategy in assembly := {
+  case PathList("org","aopalliance", xs @ _*) => MergeStrategy.last
+  case PathList("org","codehaus", xs @ _*) => MergeStrategy.last
+  case PathList("javax", "inject", xs @ _*) => MergeStrategy.last
+  case PathList("javax", "servlet", xs @ _*) => MergeStrategy.last
+  case PathList("javax", "activation", xs @ _*) => MergeStrategy.last
+  case PathList("org", "apache", xs @ _*) => MergeStrategy.last
+  case PathList("org", "apache", "spark", xs @ _*) => MergeStrategy.last
+  case PathList("commons-beanutils", "commons-beanutils", xs @ _*) => MergeStrategy.last
+  case PathList("commons-cli", "commons-cli", xs @ _*) => MergeStrategy.last
+  case PathList("commons-collections", "commons-collections", xs @ _*) => MergeStrategy.last
+  case PathList("commons-net", "commons-net",xs @ _*) => MergeStrategy.last
+  case PathList("com", "google", xs @ _*) => MergeStrategy.last
+  case PathList("com", "esotericsoftware", xs @ _*) => MergeStrategy.last
+  case PathList("com", "codahale", xs @ _*) => MergeStrategy.last
+  case PathList("com", "yammer", xs @ _*) => MergeStrategy.last
+  case PathList("META-INF", xs @ _*) => MergeStrategy.discard
+  case "about.html" => MergeStrategy.rename
+  case "META-INF/ECLIPSEF.RSA" => MergeStrategy.last
+  case "META-INF/mailcap" => MergeStrategy.last
+  case "META-INF/mimetypes.default" => MergeStrategy.last
+  case "plugin.properties" => MergeStrategy.last
+  case "log4j.properties" => MergeStrategy.last
+  case x =>
+    val oldStrategy = (assemblyMergeStrategy in assembly).value
+    oldStrategy(x)
+}
 
 lazy val commonSettings = Seq(
   version := "1.0",
@@ -51,7 +93,8 @@ lazy val comun = (project in file("comun")).
 lazy val nodoDF = (project in file("nodoDF")).
   settings(commonSettings: _*).
   settings(
-    name := "nodoDF"
+    name := "nodoDF",
+    mainClass in (Compile, run) := Some("proyectoDF.cluster.nodo.nodoDataFederationApp")
   )
   .aggregate(comun)
   .dependsOn(comun)

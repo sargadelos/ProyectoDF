@@ -4,7 +4,7 @@
 		module="comun_2.11"
 		revision="1.0"
 		status="integration"
-		publication="20170630215712"
+		publication="20170702225100"
 	>
 		<description>
 		comun
@@ -42,7 +42,23 @@
 		<dependency org="com.typesafe.akka" name="akka-cluster_2.11" rev="2.4.17" conf="compile->default(compile)"/>
 		<dependency org="com.typesafe.akka" name="akka-cluster-tools_2.11" rev="2.4.17" conf="compile->default(compile)"/>
 		<dependency org="com.typesafe.akka" name="akka-contrib_2.11" rev="2.4.8" conf="compile->default(compile)"/>
-		<dependency org="org.apache.spark" name="spark-core_2.11" rev="2.1.0" conf="compile->default(compile)"/>
-		<dependency org="org.apache.spark" name="spark-sql_2.11" rev="2.1.0" conf="compile->default(compile)"/>
+		<dependency org="org.apache.spark" name="spark-core_2.11" rev="2.1.0" conf="compile->default(compile)">
+			<exclude org="commons-beanutils" module="commons-beanutils" name="*" type="*" ext="*" conf="" matcher="exact"/>
+			<exclude org="commons-beanutils" module="commons-beanutils-core" name="*" type="*" ext="*" conf="" matcher="exact"/>
+			<exclude org="javax.inject" module="javax.inject" name="*" type="*" ext="*" conf="" matcher="exact"/>
+			<exclude org="aopalliance" module="aopalliance" name="*" type="*" ext="*" conf="" matcher="exact"/>
+			<exclude org="org.apache.hadoop" module="hadoop-yarn-common" name="*" type="*" ext="*" conf="" matcher="exact"/>
+			<exclude org="org.apache.hadoop" module="hadoop-yarn-api" name="*" type="*" ext="*" conf="" matcher="exact"/>
+			<exclude org="org.spark-project.spark" module="unused" name="*" type="*" ext="*" conf="" matcher="exact"/>
+		</dependency>
+		<dependency org="org.apache.spark" name="spark-sql_2.11" rev="2.1.0" conf="compile->default(compile)">
+			<exclude org="commons-beanutils" module="commons-beanutils" name="*" type="*" ext="*" conf="" matcher="exact"/>
+			<exclude org="commons-beanutils" module="commons-beanutils-core" name="*" type="*" ext="*" conf="" matcher="exact"/>
+			<exclude org="org.apache.hadoop" module="hadoop-yarn-common" name="*" type="*" ext="*" conf="" matcher="exact"/>
+			<exclude org="javax.inject" module="javax.inject" name="*" type="*" ext="*" conf="" matcher="exact"/>
+			<exclude org="aopalliance" module="aopalliance" name="*" type="*" ext="*" conf="" matcher="exact"/>
+			<exclude org="org.apache.hadoop" module="hadoop-yarn-api" name="*" type="*" ext="*" conf="" matcher="exact"/>
+			<exclude org="org.spark-project.spark" module="unused" name="*" type="*" ext="*" conf="" matcher="exact"/>
+		</dependency>
 	</dependencies>
 </ivy-module>

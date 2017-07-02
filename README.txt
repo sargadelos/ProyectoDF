@@ -5,8 +5,8 @@
 
 
 Debe estar arrancado Spark. Es recomendable lanzar dos workers.
-Debe arrancarse HDFS si los ficheros a partir de los cual se van crear las tablas van a almacenarse en HDFS
-Debe arrancarse Zookeper
+Debe arrancarse HDFS si los ficheros a partir de los cuales se van crear las tablas van a almacenarse en HDFS
+Debe arrancarse Zookeper (basta con un nodo)
 
 Los Datos de conexion a Zookeeper y Spark estan en el archivo application.conf del nodo
 
@@ -15,7 +15,26 @@ Cualquier otra sentencia, aunque pueda ser ejecutada en SparkSQL es rechazada po
 De momento el cliente solo recibe como respuesta un JSon con el resultado de la primera fila, aunque la select devuelva mas.
 
 Se almacenan como metadatos en Zookeeper las sentencias DDL (CREATE y DROP)
+La estructura de nodos es la siguiente:
 
-Pendiente de desarrollar la carga inicial de los metadatos en el arranque de un nodo.
+/METADATA
+   |
+   |---------> /<NOMBRE_TABLA>
+   |               |
+   |               |-----------> /<COMANDO (CREATE | DROP)> :: Datos = <Sentencia SQL>
+   |               `-----------> /<COMANDO (CREATE | DROP)> :: Datos = <Sentencia SQL>
+   |
+   `---------> /<NOMBRE_TABLA>
+                   |
+                   |-----------> /<COMANDO (CREATE | DROP)> :: Datos = <Sentencia SQL>
+                   `-----------> /<COMANDO (CREATE | DROP)> :: Datos = <Sentencia SQL>
+
+
+
+En el arranque de un nodo lee los metadatos almacenados en Zookeeprla carga inicial de los metadatos en el arranque de un nodo.
+
+NOTA: Hay un error por el que cuando se envia una sentencia al nodo que da error en Spark se vuelve a a ejecutar la secuencia de inicializacion
+      ¿Se reinicia el actor?
+
 
 

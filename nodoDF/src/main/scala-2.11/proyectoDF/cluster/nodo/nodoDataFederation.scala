@@ -1,5 +1,9 @@
 package proyectoDF.cluster.nodo
 
+
+import java.nio.charset.Charset
+import java.util
+
 import language.postfixOps
 import akka.actor.{Actor, ActorPath, ActorRef, ActorSystem, FSM, Terminated}
 import akka.cluster.pubsub.DistributedPubSub
@@ -16,6 +20,7 @@ import org.apache.spark.sql.{DataFrame, Row}
 
 import scala.util.matching.Regex.Match
 import scala.util.parsing.json.JSONObject
+import scala.collection.JavaConversions._
 
 
 // FSM: Estados
@@ -85,36 +90,31 @@ class nodoDataFederation extends Actor with FSM[EstadoNodoDF, Datos]  {
   curatorZookeeperClient.start
   curatorZookeeperClient.getZookeeperClient.blockUntilConnectedOrTimedOut
 
-  val znodePath = "/metadata"
-  if (curatorZookeeperClient.checkExists().forPath(znodePath) == null)
-    curatorZookeeperClient.create().creatingParentsIfNeeded().withMode(CreateMode.PERSISTENT).forPath(znodePath)
+  val zkPathMetadata = "/METADATA"
+  if (curatorZookeeperClient.checkExists().forPath(zkPathMetadata) == null)
+    curatorZookeeperClient.create().creatingParentsIfNeeded().withMode(CreateMode.PERSISTENT).forPath(zkPathMetadata)
 
   // Recuperar metadata existente y aplicarlo
-  /* Pendiente de implementar  */
-  goto(Activo) using SinDatos
-
-  /* Zookeeper NodeCache service to get properties from ZNode */
-  val nodeCache = new NodeCache(curatorZookeeperClient, znodePath)
-  nodeCache.getListenable.addListener(new NodeCacheListener {
-    @Override
-    def nodeChanged = {
-      try {
-        val dataFromZNode = nodeCache.getCurrentData
-        val newData = new String(dataFromZNode.getData) // This should be some new data after it is changed in the Zookeeper ensemble
-      } catch {
-        case ex: Exception => logger.error("Exception while fetching properties from zookeeper ZNode, reason " + ex.getCause)
-      }
+  // Anteriormente hemos chequeado la existencia del nodo metadata y lo hemos creado de no ser asi
+  // 1. Leemos la lista de nodos para metadata de tablas
+  var listaTablasZK : java.util.List[String] = curatorZookeeperClient.getChildren().forPath(zkPathMetadata)
+  listaTablasZK.foreach( tabla => {
+      println (tabla)
+      var listaComandosZK : util.List[String] = curatorZookeeperClient.getChildren().forPath(zkPathMetadata+"/"+tabla)
+    listaComandosZK.foreach(comandoZK => {
+        val bytesComandoZK = curatorZookeeperClient.getData().forPath(zkPathMetadata+"/"+tabla+"/"+comandoZK)
+        val textoComandoZK = new String (bytesComandoZK, Charset.forName("UTF-8"))
+        println(comandoZK+": "+textoComandoZK)
+        var est :String = ""
+        var msj :String = ""
+        procesarPeticion(textoComandoZK, est, msj)
+    })
     }
-    nodeCache.start
-  })
+  )
 
 
-  override def preStart() {
-    // Abrimos la sesion de Spark
-    val spark = org.apache.spark.sql.SparkSession.builder.getOrCreate()
-
-    self ! inicializadoDF()
-  }
+  // Cuando ya hemos terminado la inicializacion del nodo lo ponemos en estado Activo para empezar a aceptar peticiones
+  self ! inicializadoDF()
 
   def procesarPeticion (textoPeticion: String, estado: String, mensaje: String) : String = {
 
@@ -138,9 +138,6 @@ class nodoDataFederation extends Actor with FSM[EstadoNodoDF, Datos]  {
     salida
   }
 
-  // create Spark context with Spark configuration
-
-
   when (Activo) {
     case Event(peticionDF(texto, est, msj), SinDatos) =>
 
@@ -161,13 +158,18 @@ class nodoDataFederation extends Actor with FSM[EstadoNodoDF, Datos]  {
         println("Mandamos Metadata")
         mediator ! SendToAll("/user/nodo", metaDataDF(texto), allButSelf = true)
 
-        // Enviamos Metadata a Zookeeper
-        // ...... PENDIENTE .......
-        // Almacenamos en ZooKeeper
-        val znodePath = "/metadata/"+tablaSQL
-        if (curatorZookeeperClient.checkExists().forPath(znodePath) == null)
-          curatorZookeeperClient.create().creatingParentsIfNeeded().withMode(CreateMode.PERSISTENT).forPath(znodePath)
-        curatorZookeeperClient.setData().forPath(znodePath, texto.getBytes())
+        // Almacenamos Metadataen ZooKeeper
+        val zkPathTabla = zkPathMetadata+"/"+tablaSQL
+        val zkPathComando = zkPathMetadata+"/"+tablaSQL+"/"+comandoSQL
+
+        if (curatorZookeeperClient.checkExists().forPath(zkPathTabla) == null)
+          curatorZookeeperClient.create().creatingParentsIfNeeded().withMode(CreateMode.PERSISTENT).forPath(zkPathTabla)
+
+        if (curatorZookeeperClient.checkExists().forPath(zkPathComando) == null)
+          curatorZookeeperClient.create().creatingParentsIfNeeded().withMode(CreateMode.PERSISTENT).forPath(zkPathComando)
+
+        curatorZookeeperClient.setData().forPath(zkPathComando, texto.getBytes())
+
       }
 
       stay() using SinDatos
@@ -179,7 +181,6 @@ class nodoDataFederation extends Actor with FSM[EstadoNodoDF, Datos]  {
       var est :String = ""
       var msj :String = ""
       procesarPeticion(texto, est, msj)
-
 
       stay() using SinDatos
   }
