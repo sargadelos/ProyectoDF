@@ -17,6 +17,7 @@ import org.apache.curator.framework.CuratorFrameworkFactory
 import org.apache.curator.retry.ExponentialBackoffRetry
 import org.apache.curator.framework.recipes.cache.NodeCache
 import org.apache.curator.framework.recipes.cache.NodeCacheListener
+import org.apache.spark.rdd.RDD
 import org.apache.spark.sql.{DataFrame, Row}
 
 import scala.util.matching.Regex.Match
@@ -44,27 +45,35 @@ class nodoDataFederation extends Actor with FSM[EstadoNodoDF, Datos]  {
   def parsearSQL(sentencia: String) = {
     // Parseamos la peticion
     val patronComando = "( )*([A-Z]+)( )+(.)*".r
-    val patronCreate =  "( )*(CREATE|DROP)( )*(TABLE)( )+([A-Z]+)(.)*".r
+    val patronCreate = "( )*(CREATE|DROP)( )*(TABLE)( )+([A-Z]+)(.)*".r
     val patronSelect = "( )*(SELECT)( )+(.)+( )+(FROM)( )+([A-Z]+)( )*(.)*".r
 
-    val patronComando (b1, comando: String, b2, b3) = sentencia.toUpperCase
-    comandoSQL = comando
-    if (comando == "CREATE" || comando == "DROP") {
-       val patronCreate(b1, create, b2, t1, b3, tabla, b4) = sentencia.toUpperCase
-       println("TABLA = " + tabla)
-      tablaSQL = tabla
-    }
-    else {
-      if (comando == "SELECT") {
-        val patronSelect(d1, d2, d3, d4, d5, d6, d7, tabla, d9, d10) = sentencia.toUpperCase
+    try {
+      val patronComando(b1, comando: String, b2, b3) = sentencia.toUpperCase
+      comandoSQL = comando
+
+      if (comando == "CREATE" || comando == "DROP") {
+        val patronCreate(b1, create, b2, t1, b3, tabla, b4) = sentencia.toUpperCase
         println("TABLA = " + tabla)
         tablaSQL = tabla
       }
       else {
-        comandoSQL = "ERROR"
+        if (comando == "SELECT") {
+          val patronSelect(d1, d2, d3, d4, d5, d6, d7, tabla, d9, d10) = sentencia.toUpperCase
+          println("TABLA = " + tabla)
+          tablaSQL = tabla
+        }
+        else {
+          comandoSQL = "ERROR"
+        }
       }
     }
+    catch {
+      case e: Exception =>
+        comandoSQL = "ERROR"
+    }
   }
+
 
   // Variables para replicacion metadata
   val mediator = DistributedPubSub(context.system).mediator
@@ -116,31 +125,30 @@ class nodoDataFederation extends Actor with FSM[EstadoNodoDF, Datos]  {
 
   def procesarPeticion (textoPeticion: String) : String = {
 
-    var salida: String = null
     def convertRowToJSON(row: Row): String = {
       val m = row.getValuesMap(row.schema.fieldNames)
       JSONObject(m).toString()
     }
+    var salida: String = null
+    var resultado : DataFrame = null
+
 
     println(s"Procesamos comando SQL DataFederation (): '$textoPeticion")
 
     // Ejecutar comando
     try {
-      val resultado = spark.sql(textoPeticion)
-
-      if (resultado.rdd.isEmpty() == false) {
+      resultado = spark.sql(textoPeticion)
+      if (resultado.rdd.isEmpty() == false)
         salida = convertRowToJSON(resultado.collect()(0))
-      }
-      else {
+      else
         salida = "No hay filas"
-      }
-      salida = "OK"
     }
     catch {
       case e: Exception => {
         salida = e.getMessage
       }
     }
+    println("SALIDA = "+salida)
     salida
   }
 
