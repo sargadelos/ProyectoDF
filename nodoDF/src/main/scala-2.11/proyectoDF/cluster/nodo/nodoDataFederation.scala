@@ -9,6 +9,7 @@ import akka.actor.{Actor, ActorPath, ActorRef, ActorSystem, FSM, Terminated}
 import akka.cluster.pubsub.DistributedPubSub
 import akka.cluster.pubsub.DistributedPubSubMediator.{Publish, Send, SendToAll, Subscribe}
 import com.typesafe.config.ConfigFactory
+import org.apache.commons.lang.exception.ExceptionUtils
 import org.apache.zookeeper.{CreateMode, ZooDefs}
 import proyectoDF.cluster.mensajeria.{inicializadoDF, metaDataDF, peticionDF, respuestaDF}
 import org.slf4j.{Logger, LoggerFactory}
@@ -21,6 +22,7 @@ import org.apache.spark.sql.{DataFrame, Row}
 import scala.util.matching.Regex.Match
 import scala.util.parsing.json.JSONObject
 import scala.collection.JavaConversions._
+import scala.util.Failure
 
 
 // FSM: Estados
@@ -35,7 +37,6 @@ sealed trait Datos
 case object SinDatos extends Datos
 
 class nodoDataFederation extends Actor with FSM[EstadoNodoDF, Datos]  {
-
 
   var comandoSQL : String = ""
   var tablaSQL : String = ""
@@ -65,7 +66,6 @@ class nodoDataFederation extends Actor with FSM[EstadoNodoDF, Datos]  {
     }
   }
 
-
   // Variables para replicacion metadata
   val mediator = DistributedPubSub(context.system).mediator
 
@@ -81,6 +81,8 @@ class nodoDataFederation extends Actor with FSM[EstadoNodoDF, Datos]  {
     .appName("SparkNodoConexion")
     .config("spark.cores.max", "2")
     .getOrCreate()
+
+  spark.sparkContext.setLogLevel("ERROR")
 
   // Conexion a Zookeeper utilizando libreria Cliente
   private val logger = LoggerFactory.getLogger(this.getClass.getName)
@@ -105,18 +107,14 @@ class nodoDataFederation extends Actor with FSM[EstadoNodoDF, Datos]  {
         val bytesComandoZK = curatorZookeeperClient.getData().forPath(zkPathMetadata+"/"+tabla+"/"+comandoZK)
         val textoComandoZK = new String (bytesComandoZK, Charset.forName("UTF-8"))
         println(comandoZK+": "+textoComandoZK)
-        var est :String = ""
-        var msj :String = ""
-        procesarPeticion(textoComandoZK, est, msj)
+        procesarPeticion(textoComandoZK)
     })
     }
   )
-
-
   // Cuando ya hemos terminado la inicializacion del nodo lo ponemos en estado Activo para empezar a aceptar peticiones
   self ! inicializadoDF()
 
-  def procesarPeticion (textoPeticion: String, estado: String, mensaje: String) : String = {
+  def procesarPeticion (textoPeticion: String) : String = {
 
     var salida: String = null
     def convertRowToJSON(row: Row): String = {
@@ -127,13 +125,21 @@ class nodoDataFederation extends Actor with FSM[EstadoNodoDF, Datos]  {
     println(s"Procesamos comando SQL DataFederation (): '$textoPeticion")
 
     // Ejecutar comando
-    val resultado = spark.sql(textoPeticion)
+    try {
+      val resultado = spark.sql(textoPeticion)
 
-    if (resultado.rdd.isEmpty() == false) {
-       salida = convertRowToJSON(resultado.collect()(0))
+      if (resultado.rdd.isEmpty() == false) {
+        salida = convertRowToJSON(resultado.collect()(0))
+      }
+      else {
+        salida = "No hay filas"
+      }
+      salida = "OK"
     }
-    else {
-      salida = null
+    catch {
+      case e: Exception => {
+        salida = e.getMessage
+      }
     }
     salida
   }
@@ -150,8 +156,11 @@ class nodoDataFederation extends Actor with FSM[EstadoNodoDF, Datos]  {
       println ("COMANDO = " + comandoSQL)
       println("TABLA = " + tablaSQL)
 
-      // procesamos la peticion
-      sender() ! respuestaDF(procesarPeticion(texto, est, msj))
+      if (comandoSQL == "ERROR")
+        sender() ! respuestaDF("[DATAFEDERATION][ERROR]: SENTENCIA NO VALIDA")
+      else
+        // procesamos la peticion
+        sender() ! respuestaDF(procesarPeticion(texto))
 
       // Enviamos el mensaje como metadata al resto de nodos salvo él mismo
       if (comandoSQL == "CREATE" || comandoSQL == "DROP") {
@@ -178,9 +187,7 @@ class nodoDataFederation extends Actor with FSM[EstadoNodoDF, Datos]  {
     case Event(metaDataDF(texto), SinDatos) =>
       // Si recibimos metadatos enviamos la peticion pero ya no se reenvia a su vez como metadata
       println(s"Recibido Metadata: '$texto'")
-      var est :String = ""
-      var msj :String = ""
-      procesarPeticion(texto, est, msj)
+      procesarPeticion(texto)
 
       stay() using SinDatos
   }
@@ -188,17 +195,17 @@ class nodoDataFederation extends Actor with FSM[EstadoNodoDF, Datos]  {
   when (Inicializando) {
     case Event(peticionDF(texto, estado, mensaje), SinDatos) =>
       // Recibida Peticion cuando aun no hay conexion a Spark
-      println(s"Recibida peticion cuando aun no hay conexion a Spark")
+      println(s"[DATAFEDERATION][WARN]: Recibida peticion cuando aun no está inicializado el nodo")
 
       var salida : String = null
-      salida = "El servicio del DataFederation aun no está activo. Espere unos segundos"
+      salida = "[DATAFEDERATION][WARN]: El servicio del DataFederation aun no está activo. Espere unos segundos"
       sender () ! respuestaDF(salida)
 
       stay() using SinDatos
 
     case Event(inicializadoDF(), SinDatos) =>
       // Recibida Peticion cuando aun no hay conexion a Spark
-      println(s"Recibida Mensaje de Fin de Inicializacion")
+      println(s"[DATAFEDERATION][INFO]: Nodo Inicializado")
 
       goto (Activo) using SinDatos
 
