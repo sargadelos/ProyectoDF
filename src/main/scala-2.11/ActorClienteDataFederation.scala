@@ -29,7 +29,6 @@ class ActorClienteDataFederation extends Actor {
 
       result.onComplete {
         case Success(transformationResult) =>
-          println(s"OK: Resultado: ")
           val res : Array[String] = null
           println(transformationResult)
           sender() ! transformationResult

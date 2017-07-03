@@ -129,11 +129,11 @@ class nodoDataFederation extends Actor with FSM[EstadoNodoDF, Datos]  {
       val m = row.getValuesMap(row.schema.fieldNames)
       JSONObject(m).toString()
     }
-    var salida: String = null
+    var salida: String = "{ "
     var resultado : DataFrame = null
 
 
-    println(s"Procesamos comando SQL DataFederation (): '$textoPeticion")
+    println(s"[DATAFEDERATION][INFO]: Procesamos comando SQL: '$textoPeticion")
 
     // Ejecutar comando
     try {
@@ -156,7 +156,7 @@ class nodoDataFederation extends Actor with FSM[EstadoNodoDF, Datos]  {
     case Event(peticionDF(texto, est, msj), SinDatos) =>
 
       // Recibimos mensaje de peticion
-      println(s"Recibida peticion en DataFederation (): '$texto'")
+      println(s"[DATAFEDERATION][INFO]: Recibida peticion en DataFederation (): '$texto'")
 
       // Parseamos la peticion
       parsearSQL(texto)
@@ -172,7 +172,7 @@ class nodoDataFederation extends Actor with FSM[EstadoNodoDF, Datos]  {
 
       // Enviamos el mensaje como metadata al resto de nodos salvo él mismo
       if (comandoSQL == "CREATE" || comandoSQL == "DROP") {
-        println("Mandamos Metadata")
+        println("[DATAFEDERATION][INFO]: Mandamos Metadata")
         mediator ! SendToAll("/user/nodo", metaDataDF(texto), allButSelf = true)
 
         // Almacenamos Metadataen ZooKeeper
@@ -194,7 +194,7 @@ class nodoDataFederation extends Actor with FSM[EstadoNodoDF, Datos]  {
 
     case Event(metaDataDF(texto), SinDatos) =>
       // Si recibimos metadatos enviamos la peticion pero ya no se reenvia a su vez como metadata
-      println(s"Recibido Metadata: '$texto'")
+      println(s"[DATAFEDERATION][INFO]: Recibido Metadata: '$texto'")
       procesarPeticion(texto)
 
       stay() using SinDatos
