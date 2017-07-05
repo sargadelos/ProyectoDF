@@ -11,7 +11,7 @@ import akka.cluster.pubsub.DistributedPubSubMediator.{Publish, Send, SendToAll, 
 import com.typesafe.config.ConfigFactory
 import org.apache.commons.lang.exception.ExceptionUtils
 import org.apache.zookeeper.{CreateMode, ZooDefs}
-import proyectoDF.cluster.mensajeria.{inicializadoDF, metaDataDF, peticionDF, respuestaDF}
+import proyectoDF.cluster.mensajeria.{inicializadoDF, metaDataDF, peticionDF}
 import org.slf4j.{Logger, LoggerFactory}
 import org.apache.curator.framework.CuratorFrameworkFactory
 import org.apache.curator.retry.ExponentialBackoffRetry
@@ -129,7 +129,7 @@ class nodoDataFederation extends Actor with FSM[EstadoNodoDF, Datos]  {
       val m = row.getValuesMap(row.schema.fieldNames)
       JSONObject(m).toString()
     }
-    var salida: String = "{ "
+    var salida: String = ""
     var resultado : DataFrame = null
 
 
@@ -138,17 +138,28 @@ class nodoDataFederation extends Actor with FSM[EstadoNodoDF, Datos]  {
     // Ejecutar comando
     try {
       resultado = spark.sql(textoPeticion)
-      if (resultado.rdd.isEmpty() == false)
-        salida = convertRowToJSON(resultado.collect()(0))
-      else
-        salida = "No hay filas"
+      if (resultado.rdd.isEmpty() == false) {
+        var numFilas = 0
+        resultado.rdd.collect().foreach(
+            fila => {
+              numFilas = numFilas + 1
+              salida = salida + convertRowToJSON(fila) + "\n"
+        })
+        salida = salida + s"\n  Se han recuperado $numFilas filas.\n"
+      }
+      else {
+        comandoSQL match  {
+          case "CREATE" => salida = s"[DATAFEDERATION][INFO] Tabla $tablaSQL creada correctamente"
+          case "DROP" => salida = s"[DATAFEDERATION][INFO] Tabla $tablaSQL borrada correctamente"
+          case "SELECT" => salida = s"[DATAFEDERATION][INFO] No se han recuperado filas"
+        }
+      }
     }
     catch {
       case e: Exception => {
         salida = e.getMessage
       }
     }
-    println("SALIDA = "+salida)
     salida
   }
 
@@ -165,10 +176,10 @@ class nodoDataFederation extends Actor with FSM[EstadoNodoDF, Datos]  {
       println("TABLA = " + tablaSQL)
 
       if (comandoSQL == "ERROR")
-        sender() ! respuestaDF("[DATAFEDERATION][ERROR]: SENTENCIA NO VALIDA")
+        sender() ! "[DATAFEDERATION][ERROR]: SENTENCIA NO VALIDA"
       else
         // procesamos la peticion
-        sender() ! respuestaDF(procesarPeticion(texto))
+        sender() ! procesarPeticion(texto)
 
       // Enviamos el mensaje como metadata al resto de nodos salvo él mismo
       if (comandoSQL == "CREATE" || comandoSQL == "DROP") {
@@ -207,7 +218,8 @@ class nodoDataFederation extends Actor with FSM[EstadoNodoDF, Datos]  {
 
       var salida : String = null
       salida = "[DATAFEDERATION][WARN]: El servicio del DataFederation aun no está activo. Espere unos segundos"
-      sender () ! respuestaDF(salida)
+//      sender () ! respuestaDF(salida)
+      sender ! salida
 
       stay() using SinDatos
 
@@ -218,6 +230,4 @@ class nodoDataFederation extends Actor with FSM[EstadoNodoDF, Datos]  {
       goto (Activo) using SinDatos
 
   }
-
-
 }

@@ -2,11 +2,12 @@ import akka.actor.Actor
 import akka.actor.ActorPath
 import akka.cluster.client.{ClusterClientSettings, ClusterClient}
 import akka.pattern.Patterns
-import proyectoDF.cluster.mensajeria.{peticionDF, respuestaDF}
+import proyectoDF.cluster.mensajeria.{peticionDF}
 import akka.util.Timeout
 import scala.concurrent.duration._
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.util.{Failure, Success}
+import scala.concurrent.{Await, ExecutionContext, Future}
 
 class ActorClienteDataFederation extends Actor {
 
@@ -17,10 +18,12 @@ class ActorClienteDataFederation extends Actor {
 
 
   val c = context.system.actorOf(ClusterClient.props(settings), "ClienteDataFederation")
+  println(s"[CLIENTE][INFO]: Conectado a Nodo DF")
 
   def receive = {
 
     case EnviarPeticion(peticion) =>
+      val remitente = sender()
       var resultado = ""
       var mensaje = ""
       val job = peticionDF(peticion, resultado, mensaje)
@@ -29,11 +32,14 @@ class ActorClienteDataFederation extends Actor {
 
       result.onComplete {
         case Success(transformationResult) =>
-          val res : Array[String] = null
-          println(transformationResult)
-          sender() ! transformationResult
+          remitente ! transformationResult.toString
           self ! transformationResult
         case Failure(t) => println("KO: " + t.getMessage)
       }
+
+
+
+
   }
+
 }
