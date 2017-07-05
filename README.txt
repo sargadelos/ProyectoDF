@@ -31,11 +31,9 @@ La estructura de nodos es la siguiente:
 
 
 
-En el arranque de un nodo lee los metadatos almacenados en Zookeeprla carga inicial de los metadatos en el arranque de un nodo.
+En el arranque de un nodo lee los metadatos almacenados en Zookeeper y los ejecuta.
 
-NOTA: Hay un error por el que cuando se envia una sentencia al nodo que da error en Spark se vuelve a a ejecutar la secuencia de inicializacion
-      ¿Se reinicia el actor?
-
+Depurados errores.
 
 
 
