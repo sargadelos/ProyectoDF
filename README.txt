@@ -1,6 +1,6 @@
 
 1. Ejecutar proyectoDF.cluster.nodo.nodoDataFederationApp con argumento 2551
-2. Ejecutar proyectoDF.cluster.nodo.nodoDataFederationApp con argumento 2552 (opcional)
+2. Ejecutar proyectoDF.cluster.nodo.nodoDataFederationApp con argumento 2551 en el otro nodo del cluster (opcional)
 3. Ejecutar AplicacionCliente
 
 
