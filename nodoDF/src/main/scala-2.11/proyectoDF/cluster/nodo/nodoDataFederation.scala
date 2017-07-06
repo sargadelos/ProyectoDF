@@ -139,12 +139,9 @@ class nodoDataFederation extends Actor with FSM[EstadoNodoDF, Datos]  {
     try {
       resultado = spark.sql(textoPeticion)
       if (resultado.rdd.isEmpty() == false) {
-        var numFilas = 0
+        val numFilas = resultado.count
         resultado.rdd.collect().foreach(
-            fila => {
-              numFilas = numFilas + 1
-              salida = salida + convertRowToJSON(fila) + "\n"
-        })
+            fila => salida = salida + convertRowToJSON(fila) + "\n")
         salida = salida + s"\n  Se han recuperado $numFilas filas.\n"
       }
       else {
