@@ -82,6 +82,7 @@ class nodoDataFederation extends Actor with FSM[EstadoNodoDF, Datos]  {
 
   val config = ConfigFactory.load()
   val masterSpark = config.getString("sparkConfig.master-url")
+  val sparkDriverHost = config.getString("sparkConfig.driver-host")
   val zKHosts = config.getString("zkConfig.hosts")
 
   // Conexion a Spark
@@ -89,6 +90,7 @@ class nodoDataFederation extends Actor with FSM[EstadoNodoDF, Datos]  {
     .master(masterSpark)
     .appName("SparkNodoConexion")
     .config("spark.cores.max", "2")
+    .config("spark.driver.host", sparkDriverHost)
     .getOrCreate()
 
   spark.sparkContext.setLogLevel("ERROR")
