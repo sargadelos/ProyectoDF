@@ -7,7 +7,7 @@
 		revision="1.0"
 		conf="default"
 		confs="default"
-		date="20170702221520"/>
+		date="20170709230015"/>
 	<dependencies>
 		<module organisation="org.codehaus.plexus" name="plexus-component-annotations">
 			<revision name="1.6" status="release" pubdate="20141023163600" resolver="sbt-chain" artresolver="sbt-chain" homepage="" downloaded="false" searched="false" default="false" conf="default, compile, runtime(*), master(compile), runtime, default(compile), compile(*), master" position="73">

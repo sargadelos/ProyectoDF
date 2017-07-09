@@ -6,6 +6,9 @@ import java.util
 
 import language.postfixOps
 import akka.actor.{Actor, ActorPath, ActorRef, ActorSystem, FSM, Terminated}
+
+import akka.cluster.Cluster
+import akka.cluster.ClusterEvent.{MemberEvent, MemberUp, MemberRemoved, MemberExited}
 import akka.cluster.pubsub.DistributedPubSub
 import akka.cluster.pubsub.DistributedPubSubMediator.{Publish, Send, SendToAll, Subscribe}
 import com.typesafe.config.ConfigFactory
@@ -38,6 +41,13 @@ sealed trait Datos
 case object SinDatos extends Datos
 
 class nodoDataFederation extends Actor with FSM[EstadoNodoDF, Datos]  {
+
+  val cluster = Cluster(context.system)
+
+  override def preStart(): Unit =  {
+    cluster.subscribe(self, classOf[MemberEvent])
+  }
+  override def postStop(): Unit = cluster.unsubscribe(self)
 
   var comandoSQL : String = ""
   var tablaSQL : String = ""
@@ -208,6 +218,18 @@ class nodoDataFederation extends Actor with FSM[EstadoNodoDF, Datos]  {
       procesarPeticion(texto)
 
       stay() using SinDatos
+
+    case Event (MemberUp(member), SinDatos) =>
+      println (s"[DATAFEDERATION][INFO]: Se ha conectado un nuevo nodo al cluster ($member.address)")
+      stay() using SinDatos
+
+    case Event (MemberRemoved(member, _), SinDatos) =>
+      println(s"[DATAFEDERATION][INFO]: Se ha desconectado un nodo del cluster ($member.address)")
+      stay() using SinDatos
+
+    case Event (MemberExited(member), SinDatos) =>
+      println(s"[DATAFEDERATION][INFO]: Se ha desconectado un nodo del cluster ($member.address)")
+      stay() using SinDatos
   }
 
   when (Inicializando) {
@@ -227,6 +249,18 @@ class nodoDataFederation extends Actor with FSM[EstadoNodoDF, Datos]  {
       println(s"[DATAFEDERATION][INFO]: Nodo Inicializado")
 
       goto (Activo) using SinDatos
+
+    case Event (MemberUp(member), SinDatos) =>
+      println (s"[DATAFEDERATION][INFO]: Se ha conectado un nuevo nodo al cluster ($member.address)")
+      stay() using SinDatos
+
+    case Event (MemberRemoved(member, _), SinDatos) =>
+      println(s"[DATAFEDERATION][INFO]: Se ha desconectado un nodo del cluster ($member.address)")
+      stay() using SinDatos
+
+    case Event (MemberExited(member), SinDatos) =>
+      println(s"[DATAFEDERATION][INFO]: Se ha desconectado un nodo del cluster ($member.address)")
+      stay() using SinDatos
 
   }
 }

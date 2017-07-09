@@ -9,7 +9,7 @@
 [debug] == resolving dependencies for comun#comun$sbt_2.11;1.0 [default]
 [debug] == resolving dependencies comun#comun$sbt_2.11;1.0->org.scala-sbt#sbt;0.13.8 [default->default(compile)]
 [info] Resolving org.scala-sbt#sbt;0.13.8 ...
-[debug] sbt-chain: Checking cache for: sbt.ivyint.MergedDescriptors@1bb77f0b
+[debug] sbt-chain: Checking cache for: sbt.ivyint.MergedDescriptors@4c45ae07
 [debug] sbt-chain: module revision found in cache: org.scala-sbt#sbt;0.13.8
 [debug] 	found org.scala-sbt#sbt;0.13.8 in sbt-chain
 [debug] == resolving dependencies org.scala-sbt#sbt;0.13.8->org.scala-lang#scala-library;2.10.4 [compile->default(compile)]
@@ -1354,9 +1354,9 @@
 [debug] 	[NOT REQUIRED] org.scala-lang#scala-library;2.10.6!scala-library.jar
 [debug] 	[NOT REQUIRED] org.scala-lang#scala-reflect;2.10.6!scala-reflect.jar
 [debug] 	[NOT REQUIRED] org.jboss.interceptor#jboss-interceptor-api;1.1!jboss-interceptor-api.jar
-[debug] :: resolution report :: resolve 2184ms :: artifacts dl 46ms
-[debug] 	report for comun#comun$sbt_2.11;1.0 default produced in /home/utad/Dropbox/Proyecto/DF/ProyectoDF/comun/target/resolution-cache/reports/comun-comun$sbt_2.11-default.xml
-[debug] 	resolve done (2184ms resolve - 46ms download)
+[debug] :: resolution report :: resolve 3795ms :: artifacts dl 126ms
+[debug] 	report for comun#comun$sbt_2.11;1.0 default produced in /home/utad/Proyecto/ProyectoDF/comun/target/resolution-cache/reports/comun-comun$sbt_2.11-default.xml
+[debug] 	resolve done (3795ms resolve - 126ms download)
 [debug] Using inline dependencies specified in Scala.
 [debug] :: resolving dependencies :: comun#comun$sources_2.11;1.0
 [debug] 	confs: [default]
@@ -1916,6 +1916,6 @@
 [debug] 	[NOT REQUIRED] org.eclipse.sisu#org.eclipse.sisu.inject;0.3.2!org.eclipse.sisu.inject.jar(src)
 [debug] 	[NOT REQUIRED] org.codehaus.plexus#plexus-component-annotations;1.6!plexus-component-annotations.jar(src)
 [debug] 	[NOT REQUIRED] org.codehaus.plexus#plexus-classworlds;2.5.2!plexus-classworlds.jar(src)
-[debug] :: resolution report :: resolve 431ms :: artifacts dl 58ms
-[debug] 	report for comun#comun$sources_2.11;1.0 default produced in /home/utad/Dropbox/Proyecto/DF/ProyectoDF/comun/target/resolution-cache/reports/comun-comun$sources_2.11-default.xml
-[debug] 	resolve done (431ms resolve - 58ms download)
+[debug] :: resolution report :: resolve 563ms :: artifacts dl 121ms
+[debug] 	report for comun#comun$sources_2.11;1.0 default produced in /home/utad/Proyecto/ProyectoDF/comun/target/resolution-cache/reports/comun-comun$sources_2.11-default.xml
+[debug] 	resolve done (563ms resolve - 121ms download)
