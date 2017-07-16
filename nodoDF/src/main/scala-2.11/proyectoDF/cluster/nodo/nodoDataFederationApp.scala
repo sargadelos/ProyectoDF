@@ -7,7 +7,7 @@ import com.typesafe.config.ConfigFactory
 import akka.cluster.client.ClusterClientReceptionist
 
 
-object nodoDataFederationApp extends App {
+    object nodoDataFederationApp extends App {
 
   override def main(args: Array[String]): Unit = {
 

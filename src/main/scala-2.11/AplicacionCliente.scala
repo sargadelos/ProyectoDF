@@ -1,7 +1,7 @@
 import java.util.concurrent.atomic.AtomicInteger
 
 import akka.actor.{ActorSystem, Props}
-import akka.pattern.{ask}
+import akka.pattern.ask
 import akka.util.Timeout
 
 import scala.concurrent.{Await, TimeoutException}
@@ -22,7 +22,7 @@ object AplicacionCliente {
     mensaje = scala.io.StdIn.readLine("\n ¿Petición? \n")
 
     while (mensaje != "FIN") {
-      implicit val timeout = Timeout(10 seconds)
+      implicit val timeout = Timeout(150 seconds)
       val future = actorClienteDataFederation ? EnviarPeticion (mensaje)
       try {
         val result = Await.result(future, timeout.duration).asInstanceOf[String]

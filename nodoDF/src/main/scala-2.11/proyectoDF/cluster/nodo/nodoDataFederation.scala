@@ -5,36 +5,27 @@ import java.nio.charset.Charset
 import java.util
 
 import language.postfixOps
-import akka.actor.{Actor, ActorPath, ActorRef, ActorSystem, FSM, Terminated}
-
+import akka.actor.{Actor, FSM}
 import akka.cluster.Cluster
-import akka.cluster.ClusterEvent.{MemberEvent, MemberUp, MemberRemoved, MemberExited}
+import akka.cluster.ClusterEvent.{MemberEvent, MemberExited, MemberRemoved, MemberUp}
 import akka.cluster.pubsub.DistributedPubSub
-import akka.cluster.pubsub.DistributedPubSubMediator.{Publish, Send, SendToAll, Subscribe}
+import akka.cluster.pubsub.DistributedPubSubMediator.SendToAll
 import com.typesafe.config.ConfigFactory
-import org.apache.commons.lang.exception.ExceptionUtils
-import org.apache.zookeeper.{CreateMode, ZooDefs}
+import org.apache.zookeeper.CreateMode
 import proyectoDF.cluster.mensajeria.{inicializadoDF, metaDataDF, peticionDF}
-import org.slf4j.{Logger, LoggerFactory}
+import org.slf4j.LoggerFactory
 import org.apache.curator.framework.CuratorFrameworkFactory
 import org.apache.curator.retry.ExponentialBackoffRetry
-import org.apache.curator.framework.recipes.cache.NodeCache
-import org.apache.curator.framework.recipes.cache.NodeCacheListener
-import org.apache.spark.rdd.RDD
 import org.apache.spark.sql.{DataFrame, Row}
 
-import scala.util.matching.Regex.Match
 import scala.util.parsing.json.JSONObject
 import scala.collection.JavaConversions._
-import scala.util.Failure
 
 
 // FSM: Estados
 sealed trait EstadoNodoDF
 case object Inicializando extends EstadoNodoDF
-case object Actualizando extends EstadoNodoDF
 case object Activo extends EstadoNodoDF
-case object SinSesion extends EstadoNodoDF
 
 // FSM: Datos
 sealed trait Datos
@@ -64,13 +55,11 @@ class nodoDataFederation extends Actor with FSM[EstadoNodoDF, Datos]  {
 
       if (comando == "CREATE" || comando == "DROP") {
         val patronCreate(b1, create, b2, t1, b3, tabla, b4) = sentencia.toUpperCase
-        println("TABLA = " + tabla)
         tablaSQL = tabla
       }
       else {
         if (comando == "SELECT") {
           val patronSelect(d1, d2, d3, d4, d5, d6, d7, tabla, d9, d10) = sentencia.toUpperCase
-          println("TABLA = " + tabla)
           tablaSQL = tabla
         }
         else {
@@ -120,14 +109,14 @@ class nodoDataFederation extends Actor with FSM[EstadoNodoDF, Datos]  {
   // Recuperar metadata existente y aplicarlo
   // Anteriormente hemos chequeado la existencia del nodo metadata y lo hemos creado de no ser asi
   // 1. Leemos la lista de nodos para metadata de tablas
+  println(Console.YELLOW + s"[DATAFEDERATION][INFO]:" + Console.WHITE + s" Procesando Metadata en arranque de nodo.")
+
   var listaTablasZK : java.util.List[String] = curatorZookeeperClient.getChildren().forPath(zkPathMetadata)
   listaTablasZK.foreach( tabla => {
-      println (tabla)
       var listaComandosZK : util.List[String] = curatorZookeeperClient.getChildren().forPath(zkPathMetadata+"/"+tabla)
     listaComandosZK.foreach(comandoZK => {
         val bytesComandoZK = curatorZookeeperClient.getData().forPath(zkPathMetadata+"/"+tabla+"/"+comandoZK)
         val textoComandoZK = new String (bytesComandoZK, Charset.forName("UTF-8"))
-        println(comandoZK+": "+textoComandoZK)
         procesarPeticion(textoComandoZK)
     })
     }
@@ -138,14 +127,22 @@ class nodoDataFederation extends Actor with FSM[EstadoNodoDF, Datos]  {
   def procesarPeticion (textoPeticion: String) : String = {
 
     def convertRowToJSON(row: Row): String = {
-      val m = row.getValuesMap(row.schema.fieldNames)
-      JSONObject(m).toString()
+      try {
+        val m = row.getValuesMap(row.schema.fieldNames)
+        JSONObject(m).toString()
+      }
+      catch {
+        case e : Exception => {
+          println(e.getMessage)
+          row.toString()
+        }
+      }
     }
     var salida: String = ""
     var resultado : DataFrame = null
 
 
-    println(s"[DATAFEDERATION][INFO]: Procesamos comando SQL: '$textoPeticion")
+    println(Console.YELLOW + s"[DATAFEDERATION][INFO]:" + Console.WHITE + s" Procesando comando SQL: '$textoPeticion")
 
     // Ejecutar comando
     try {
@@ -158,9 +155,9 @@ class nodoDataFederation extends Actor with FSM[EstadoNodoDF, Datos]  {
       }
       else {
         comandoSQL match  {
-          case "CREATE" => salida = s"[DATAFEDERATION][INFO] Tabla $tablaSQL creada correctamente"
-          case "DROP" => salida = s"[DATAFEDERATION][INFO] Tabla $tablaSQL borrada correctamente"
-          case "SELECT" => salida = s"[DATAFEDERATION][INFO] No se han recuperado filas"
+          case "CREATE" => salida = Console.YELLOW + "[DATAFEDERATION][INFO]:" + Console.WHITE + s" Tabla $tablaSQL creada correctamente"
+          case "DROP" => salida = Console.YELLOW + "[DATAFEDERATION][INFO]:" + Console.WHITE + s" Tabla $tablaSQL borrada correctamente"
+          case "SELECT" => salida = Console.YELLOW + s"[DATAFEDERATION][INFO]:" + Console.WHITE + s" No se han recuperado filas"
         }
       }
     }
@@ -176,23 +173,20 @@ class nodoDataFederation extends Actor with FSM[EstadoNodoDF, Datos]  {
     case Event(peticionDF(texto, est, msj), SinDatos) =>
 
       // Recibimos mensaje de peticion
-      println(s"[DATAFEDERATION][INFO]: Recibida peticion en DataFederation (): '$texto'")
+      println(Console.YELLOW + "[DATAFEDERATION][INFO]:" + Console.WHITE + s" Recibida peticion en DataFederation (): '$texto'")
 
       // Parseamos la peticion
       parsearSQL(texto)
 
-      println ("COMANDO = " + comandoSQL)
-      println("TABLA = " + tablaSQL)
-
       if (comandoSQL == "ERROR")
-        sender() ! "[DATAFEDERATION][ERROR]: SENTENCIA NO VALIDA"
+        sender() ! Console.YELLOW + s"[DATAFEDERATION][INFO]:" + Console.WHITE + " SENTENCIA NO VALIDA"
       else
         // procesamos la peticion
         sender() ! procesarPeticion(texto)
 
       // Enviamos el mensaje como metadata al resto de nodos salvo él mismo
       if (comandoSQL == "CREATE" || comandoSQL == "DROP") {
-        println("[DATAFEDERATION][INFO]: Mandamos Metadata")
+        println(Console.YELLOW + s"[DATAFEDERATION][INFO]:" + Console.WHITE + " Mandamos Metadata")
         mediator ! SendToAll("/user/nodo", metaDataDF(texto), allButSelf = true)
 
         // Almacenamos Metadataen ZooKeeper
@@ -214,52 +208,51 @@ class nodoDataFederation extends Actor with FSM[EstadoNodoDF, Datos]  {
 
     case Event(metaDataDF(texto), SinDatos) =>
       // Si recibimos metadatos enviamos la peticion pero ya no se reenvia a su vez como metadata
-      println(s"[DATAFEDERATION][INFO]: Recibido Metadata: '$texto'")
+      println(Console.YELLOW + s"[DATAFEDERATION][INFO]:" + Console.WHITE + s" Recibido Metadata: '$texto'")
       procesarPeticion(texto)
 
       stay() using SinDatos
 
     case Event (MemberUp(member), SinDatos) =>
-      println (s"[DATAFEDERATION][INFO]: Se ha conectado un nuevo nodo al cluster ($member.address)")
+      println (Console.YELLOW + s"[DATAFEDERATION][INFO]:" + Console.WHITE + s" Se ha conectado un nuevo nodo al cluster (${member.address})")
       stay() using SinDatos
 
     case Event (MemberRemoved(member, _), SinDatos) =>
-      println(s"[DATAFEDERATION][INFO]: Se ha desconectado un nodo del cluster ($member.address)")
+      println(Console.YELLOW + s"[DATAFEDERATION][INFO]:" + Console.WHITE + s" Se ha desconectado un nodo del cluster (${member.address})")
       stay() using SinDatos
 
     case Event (MemberExited(member), SinDatos) =>
-      println(s"[DATAFEDERATION][INFO]: Se ha desconectado un nodo del cluster ($member.address)")
+      println(Console.YELLOW + s"[DATAFEDERATION][INFO]:" + Console.WHITE + s" Se ha desconectado un nodo del cluster (${member.address})")
       stay() using SinDatos
   }
 
   when (Inicializando) {
     case Event(peticionDF(texto, estado, mensaje), SinDatos) =>
       // Recibida Peticion cuando aun no hay conexion a Spark
-      println(s"[DATAFEDERATION][WARN]: Recibida peticion cuando aun no está inicializado el nodo")
+      println(Console.YELLOW + s"[DATAFEDERATION][INFO]:" + Console.WHITE + " Recibida peticion cuando aun no está inicializado el nodo")
 
       var salida : String = null
-      salida = "[DATAFEDERATION][WARN]: El servicio del DataFederation aun no está activo. Espere unos segundos"
-//      sender () ! respuestaDF(salida)
+      salida = Console.YELLOW + s"[DATAFEDERATION][INFO]:" + Console.WHITE + " El servicio del DataFederation aun no está activo. Espere unos segundos"
       sender ! salida
 
       stay() using SinDatos
 
     case Event(inicializadoDF(), SinDatos) =>
       // Recibida Peticion cuando aun no hay conexion a Spark
-      println(s"[DATAFEDERATION][INFO]: Nodo Inicializado")
+      println(Console.YELLOW + s"[DATAFEDERATION][INFO]:" + Console.WHITE + s" Nodo Inicializado")
 
       goto (Activo) using SinDatos
 
     case Event (MemberUp(member), SinDatos) =>
-      println (s"[DATAFEDERATION][INFO]: Se ha conectado un nuevo nodo al cluster ($member.address)")
+      println (Console.YELLOW + s"[DATAFEDERATION][INFO]:" + Console.WHITE + s" Se ha conectado un nuevo nodo al cluster (${member.address})")
       stay() using SinDatos
 
     case Event (MemberRemoved(member, _), SinDatos) =>
-      println(s"[DATAFEDERATION][INFO]: Se ha desconectado un nodo del cluster ($member.address)")
+      println(Console.YELLOW + s"[DATAFEDERATION][INFO]:" + Console.WHITE + s" Se ha desconectado un nodo del cluster (${member.address})")
       stay() using SinDatos
 
     case Event (MemberExited(member), SinDatos) =>
-      println(s"[DATAFEDERATION][INFO]: Se ha desconectado un nodo del cluster ($member.address)")
+      println(Console.YELLOW + s"[DATAFEDERATION][INFO]:" + Console.WHITE + s" Se ha desconectado un nodo del cluster (${member.address})")
       stay() using SinDatos
 
   }
